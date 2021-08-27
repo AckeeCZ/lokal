@@ -1,7 +1,9 @@
 import { EOL } from "os";
+import { OutputFormat } from "../constants";
 import { Transformer } from "./transformer";
 
 const iOSTransformer: Transformer = {
+  outputFormat: OutputFormat.IOS,
   transformComment(comment) {
     return "// " + comment;
   },

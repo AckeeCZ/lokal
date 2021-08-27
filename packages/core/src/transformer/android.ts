@@ -1,4 +1,5 @@
 import { EOL } from "os";
+import { OutputFormat } from "../constants";
 import { Transformer } from "./transformer";
 
 function setCharAt(str: string, index: number, chr: number) {
@@ -7,6 +8,7 @@ function setCharAt(str: string, index: number, chr: number) {
 }
 
 const androidTransformer: Transformer = {
+  outputFormat: OutputFormat.ANDROID,
   transformComment(comment) {
     return "    <!-- " + comment + " -->";
   },

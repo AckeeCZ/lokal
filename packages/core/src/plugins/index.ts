@@ -1,6 +1,8 @@
 export type {
   LoksePlugin,
   GeneralPluginOptions,
+  TransformFullOutputMeta,
+  TransformLineMeta,
 } from "./create";
 export { createPlugin } from "./create";
 

@@ -16,8 +16,7 @@
     "dedent": "^0.7.0",
     "google-spreadsheet": "^3.0.13",
     "lodash": "^4.17.20",
-    "mkdirp": "^1.0.4",
-    "prettier": "^2.1.2"
+    "mkdirp": "^1.0.4"
   },
   "devDependencies": {
     "@types/node": "^10"

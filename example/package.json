@@ -3,5 +3,9 @@
     "private": true,
     "version": "1.7.0",
     "main": "index.js",
-    "license": "MIT"
+    "license": "MIT",
+    "devDependencies": {
+        "lokse": "*",
+        "@lokse/plugin-prettier": "*"
+    }
 }

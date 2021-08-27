@@ -6,20 +6,29 @@ import * as mkdirp from "mkdirp";
 import Transformer from "./transformer";
 import Line from "./line";
 import { PluginsRunner } from "./plugins";
+import type { TransformLineMeta } from "./plugins";
 
 const fs = promisifyAll(require("fs"));
 
+interface FileInfo {
+  language: string;
+  domain?: string;
+  outputDir: string;
+}
 class FileWriter {
   // eslint-disable-next-line no-useless-constructor
   constructor(private plugins: PluginsRunner) {}
 
   async write(
-    filePath: string,
+    fileInfo: FileInfo,
     lines: Line[],
     transformer: Transformer,
     encoding = "utf8"
   ) {
     let fileContent = "";
+    const { language, domain, outputDir } = fileInfo;
+    const fileName = transformer.getFileName(language, domain);
+    const filePath = path.resolve(outputDir, fileName);
 
     try {
       await fs.accessAsync(filePath, fs.F_OK);
@@ -30,17 +39,30 @@ class FileWriter {
       // file doesnt exist yet
     }
 
-    const valueToInsert = await this.getTransformedLines(lines, transformer);
+    const valueToInsert = await this.getTransformedLines(lines, transformer, {
+      language,
+      domain,
+    });
 
     let output = await transformer.insert(fileContent, valueToInsert);
-    output = await this.plugins.runHook("transformFullOutput", output);
+    output = await this.plugins.runHook("transformFullOutput", output, {
+      transformer,
+      language,
+      domain,
+    });
 
     const dirname = path.dirname(filePath);
     await mkdirp(dirname);
     await fs.writeFileAsync(filePath, output, encoding);
+
+    return fileName;
   }
 
-  async getTransformedLines(lines: Line[], transformer: Transformer) {
+  async getTransformedLines(
+    lines: Line[],
+    transformer: Transformer,
+    meta: TransformLineMeta
+  ) {
     let valueToInsert = "";
 
     const plurals: { [pluralKey: string]: Line[] } = {};
@@ -54,7 +76,11 @@ class FileWriter {
       }
 
       // eslint-disable-next-line no-await-in-loop
-      const line = await this.plugins.runHook("transformLine", unprocessedLine);
+      const line = await this.plugins.runHook(
+        "transformLine",
+        unprocessedLine,
+        meta
+      );
 
       if (line.isComment()) {
         valueToInsert += transformer.transformComment(line.getComment());

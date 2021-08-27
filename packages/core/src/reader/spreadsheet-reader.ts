@@ -37,11 +37,8 @@ export class SpreadsheetReader {
   }
 
   async authenticate() {
-    const {
-      LOKSE_API_KEY,
-      LOKSE_SERVICE_ACCOUNT_EMAIL,
-      LOKSE_PRIVATE_KEY,
-    } = process.env;
+    const { LOKSE_API_KEY, LOKSE_SERVICE_ACCOUNT_EMAIL, LOKSE_PRIVATE_KEY } =
+      process.env;
 
     if (LOKSE_SERVICE_ACCOUNT_EMAIL && LOKSE_PRIVATE_KEY) {
       await this.spreadsheet.useServiceAccountAuth({

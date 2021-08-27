@@ -11,14 +11,17 @@ describe("PluginsRunner.runHook", () => {
 
   it("should run hook of each plugin", async () => {
     const plugin1 = {
+      pluginName: "plugin1",
       transformLine: jest.fn(),
       transformFullOutput: jest.fn(),
     };
     const plugin2 = {
+      pluginName: "plugin2",
       transformLine: jest.fn(),
       transformFullOutput: jest.fn(),
     };
     const plugin3 = {
+      pluginName: "plugin3",
       transformLine: jest.fn(),
       transformFullOutput: jest.fn(),
     };
@@ -39,14 +42,17 @@ describe("PluginsRunner.runHook", () => {
 
   it("should pass result of plugin to the next one", async () => {
     const plugin1 = {
+      pluginName: "plugin1",
       transformLine: jest.fn(),
       transformFullOutput: jest.fn((output: string) => output + "1"),
     };
     const plugin2 = {
+      pluginName: "plugin2",
       transformLine: jest.fn(),
       transformFullOutput: jest.fn((output: string) => output + "2"),
     };
     const plugin3 = {
+      pluginName: "plugin3",
       transformLine: jest.fn(),
       transformFullOutput: jest.fn((output: string) => output + "3"),
     };
@@ -56,14 +62,15 @@ describe("PluginsRunner.runHook", () => {
     });
     const result = await plugins.runHook("transformFullOutput", "");
 
-    expect(plugin1.transformFullOutput).toHaveBeenCalledWith("");
-    expect(plugin2.transformFullOutput).toHaveBeenCalledWith("1");
-    expect(plugin3.transformFullOutput).toHaveBeenCalledWith("12");
+    expect(plugin1.transformFullOutput).toHaveBeenCalledWith("", undefined);
+    expect(plugin2.transformFullOutput).toHaveBeenCalledWith("1", undefined);
+    expect(plugin3.transformFullOutput).toHaveBeenCalledWith("12", undefined);
     expect(result).toBe("123");
   });
 
   it("should return original result if error occur during hook execution", async () => {
     const plugin1 = {
+      pluginName: "plugin1",
       transformLine: jest.fn(),
       transformFullOutput: jest.fn((output: string) => {
         throw new Error("Something happened");
@@ -71,6 +78,7 @@ describe("PluginsRunner.runHook", () => {
       }),
     };
     const plugin2 = {
+      pluginName: "plugin2",
       transformLine: jest.fn(),
       transformFullOutput: jest.fn((output: string) => output + "2"),
     };
@@ -80,8 +88,8 @@ describe("PluginsRunner.runHook", () => {
     });
     const result = await plugins.runHook("transformFullOutput", "");
 
-    expect(plugin1.transformFullOutput).toHaveBeenCalledWith("");
-    expect(plugin2.transformFullOutput).toHaveBeenCalledWith("");
+    expect(plugin1.transformFullOutput).toHaveBeenCalledWith("", undefined);
+    expect(plugin2.transformFullOutput).toHaveBeenCalledWith("", undefined);
     expect(result).toBe("2");
     expect(logger.warn).toHaveBeenCalledTimes(1);
   });

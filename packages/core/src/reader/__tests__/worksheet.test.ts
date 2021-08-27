@@ -4,12 +4,12 @@ import Worksheet from "..//worksheet";
 
 describe("Worksheet", () => {
   const createRow = (rowIndex: number, values: { [key: string]: any }) =>
-    (({
+    ({
       rowIndex,
       ...values,
       save: () => null,
       delete: () => null,
-    } as unknown) as GoogleSpreadsheetRow);
+    } as unknown as GoogleSpreadsheetRow);
 
   it("should extract lines", () => {
     const worksheet = new Worksheet(

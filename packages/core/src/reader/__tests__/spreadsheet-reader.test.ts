@@ -86,7 +86,7 @@ describe("SpreadsheetReader", () => {
 
   describe("read", () => {
     const makeFakeLine = (id: string) => {
-      return ({ id: `line_${id}` } as unknown) as Line;
+      return { id: `line_${id}` } as unknown as Line;
     };
 
     const makeFakeWorksheet = (title: string, lines: Line[]) => {
@@ -94,7 +94,7 @@ describe("SpreadsheetReader", () => {
         title,
         extractLines: jest.fn().mockReturnValue(lines),
       };
-      return (fakeWorksheet as unknown) as Worksheet;
+      return fakeWorksheet as unknown as Worksheet;
     };
 
     const linesSet1 = [makeFakeLine("1_1"), makeFakeLine("1_2")];

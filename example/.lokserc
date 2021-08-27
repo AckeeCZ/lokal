@@ -6,5 +6,6 @@
     "en",
     "fr"
   ],
-  "column": "key_web"
+  "column": "key_web",
+  "plugins": ["@lokse/plugin-prettier"]
 }

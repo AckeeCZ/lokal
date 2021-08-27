@@ -1,11 +1,11 @@
-# @lokse/plugin-
+# @lokse/plugin-prettier
 
-Plugin for...
+Plugin used to format output translations file using Prettier.
 
 ## Installation
 
 ```sh
-$ yarn add -D @lokse/plugin-
+$ yarn add -D @lokse/plugin-prettier
 ```
 
 ## Usage
@@ -14,7 +14,7 @@ Add it into plugins section of lokse config
 
 ```json
 {
-    "plugins": ["@lokse/plugin-"]
+    "plugins": ["@lokse/plugin-prettier"]
 }
 ```
 

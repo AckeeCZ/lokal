@@ -1,6 +1,8 @@
+import type { OutputFormat } from "../constants";
 import Line from "../line";
 
 export interface Transformer {
+  outputFormat: OutputFormat;
   transformComment(comment: string): string;
   transformKeyValue(key: string, value: string): string;
   /* merge newValues dans input selon la convention de la plateforme (utilisation d'un commentaire pour séparer ce qui est généré */

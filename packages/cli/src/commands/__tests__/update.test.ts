@@ -52,7 +52,7 @@ ReaderMock.mockReturnValue({
 
 // Worksheet reader mock
 const mockWorksheetRead = jest.fn();
-const WorksheetReaderMock = (WorksheetReader as any) as jest.Mock;
+const WorksheetReaderMock = WorksheetReader as any as jest.Mock;
 WorksheetReaderMock.mockReturnValue({
   read: mockWorksheetRead,
 });
@@ -84,7 +84,11 @@ describe("update command", () => {
       WorksheetReaderMock.mockClear();
       mockRead.mockClear().mockReturnValue(mockSheetLines);
       FileWriterMock.mockClear();
-      mockWrite.mockClear();
+      mockWrite
+        .mockClear()
+        .mockImplementation(({ language, domain }) =>
+          [language, domain].filter(Boolean).join(".")
+        );
 
       mockOraInstance.start.mockClear();
       mockOraInstance.warn.mockClear();
@@ -361,32 +365,39 @@ describe("update command", () => {
     .stub(process, "cwd", jest.fn().mockReturnValue("/ROOT_PKG_PATH"))
     .command(["update", ...Object.values(params)])
     .it("writes language data in desired format into the output dir", () => {
-      let relPath = "";
-
       expect(mockWrite).toHaveBeenCalledTimes(3);
       expect(mockOraInstance.succeed).toHaveBeenCalledTimes(3);
 
-      relPath = `${translationsDir}/${languages[0]}.json`;
-      expect(mockWrite.mock.calls[0][0]).toEqual(`/ROOT_PKG_PATH/${relPath}`);
+      expect(mockWrite.mock.calls[0][0]).toEqual({
+        language: languages[0],
+        domain: undefined,
+        outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+      });
       expect(mockWrite.mock.calls[0][1]).toEqual(mockSheetLines);
       expect(mockOraInstance.succeed).toHaveBeenNthCalledWith(
         1,
-        `All ${languages[0]} translations saved into ${relPath}`
+        `All ${languages[0]} translations saved into ${translationsDir}/${languages[0]}`
       );
 
-      relPath = `${translationsDir}/${languages[1]}.json`;
-      expect(mockWrite.mock.calls[1][0]).toEqual(`/ROOT_PKG_PATH/${relPath}`);
+      expect(mockWrite.mock.calls[1][0]).toEqual({
+        language: languages[1],
+        domain: undefined,
+        outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+      });
       expect(mockWrite.mock.calls[1][1]).toEqual(mockSheetLines);
       expect(mockOraInstance.succeed).toHaveBeenNthCalledWith(
         2,
-        `All ${languages[1]} translations saved into ${relPath}`
+        `All ${languages[1]} translations saved into ${translationsDir}/${languages[1]}`
       );
 
-      relPath = `${translationsDir}/${languages[2]}.json`;
-      expect(mockWrite.mock.calls[2][0]).toEqual(`/ROOT_PKG_PATH/${relPath}`);
+      expect(mockWrite.mock.calls[2][0]).toEqual({
+        language: languages[2],
+        domain: undefined,
+        outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+      });
       expect(mockOraInstance.succeed).toHaveBeenNthCalledWith(
         3,
-        `All ${languages[2]} translations saved into ${relPath}`
+        `All ${languages[2]} translations saved into ${translationsDir}/${languages[2]}`
       );
     });
 
@@ -412,7 +423,7 @@ describe("update command", () => {
 
       expect(mockOraInstance.succeed).toHaveBeenCalledTimes(1);
       expect(mockOraInstance.succeed).toHaveBeenCalledWith(
-        `All ${languages[0]} translations saved into ${translationsDir}/${languages[0]}.json`
+        `All ${languages[0]} translations saved into ${translationsDir}/${languages[0]}`
       );
       expect(error.message).toEqual("Read spreadsheet error");
     })
@@ -449,7 +460,7 @@ describe("update command", () => {
 
         expect(mockOraInstance.succeed).toHaveBeenCalledTimes(1);
         expect(mockOraInstance.succeed).toHaveBeenCalledWith(
-          `All ${languages[2]} translations saved into ${translationsDir}/${languages[2]}.json`
+          `All ${languages[2]} translations saved into ${translationsDir}/${languages[2]}`
         );
 
         expect(console.error).toHaveBeenCalledTimes(2);
@@ -479,6 +490,9 @@ describe("update command", () => {
         explorerMock.search.mockReturnValue({
           config: { splitTranslations: true },
         });
+        mockWrite
+          .mockReturnValueOnce(`/values-${languages[0]}strings.xml`)
+          .mockReturnValueOnce(`/values-${languages[1]}strings.xml`);
       })
       .stub(process, "cwd", jest.fn().mockReturnValue("/ROOT_PKG_PATH"))
       .command([
@@ -498,7 +512,11 @@ describe("update command", () => {
           const writeCalls = mockWrite.mock.calls;
 
           relPath = `${translationsDir}/values-${languages[0]}strings.xml`;
-          expect(writeCalls[0][0]).toEqual(`/ROOT_PKG_PATH/${relPath}`);
+          expect(writeCalls[0][0]).toEqual({
+            language: languages[0],
+            domain: undefined,
+            outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+          });
           expect(writeCalls[0][1]).toEqual([
             ...mockSheetLines,
             ...mockSheetLines2,
@@ -511,7 +529,11 @@ describe("update command", () => {
           );
 
           relPath = `${translationsDir}/values-${languages[1]}strings.xml`;
-          expect(writeCalls[1][0]).toEqual(`/ROOT_PKG_PATH/${relPath}`);
+          expect(writeCalls[1][0]).toEqual({
+            language: languages[1],
+            domain: undefined,
+            outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+          });
           expect(writeCalls[1][1]).toEqual([
             ...mockSheetLines,
             ...mockSheetLines2,
@@ -541,17 +563,23 @@ describe("update command", () => {
 
         const writeCalls = mockWrite.mock.calls;
 
-        expect(writeCalls[0][0]).toEqual(
-          `/ROOT_PKG_PATH/${translationsDir}/sheet1-title.${languages[0]}.json`
-        );
+        expect(writeCalls[0][0]).toEqual({
+          language: languages[0],
+          domain: "sheet1-title",
+          outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+        });
         expect(writeCalls[0][1]).toEqual(mockSheetLines);
-        expect(writeCalls[1][0]).toEqual(
-          `/ROOT_PKG_PATH/${translationsDir}/sheet2-title.${languages[0]}.json`
-        );
+        expect(writeCalls[1][0]).toEqual({
+          language: languages[0],
+          domain: "sheet2-title",
+          outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+        });
         expect(writeCalls[1][1]).toEqual(mockSheetLines2);
-        expect(writeCalls[2][0]).toEqual(
-          `/ROOT_PKG_PATH/${translationsDir}/sheet3-title.${languages[0]}.json`
-        );
+        expect(writeCalls[2][0]).toEqual({
+          language: languages[0],
+          domain: "sheet3-title",
+          outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+        });
         expect(writeCalls[2][1]).toEqual(mockSheetLines3);
 
         expect(mockOraInstance.succeed).toHaveBeenNthCalledWith(
@@ -560,17 +588,23 @@ describe("update command", () => {
                 Splitted to sheet1-title, sheet2-title, sheet3-title`
         );
 
-        expect(writeCalls[3][0]).toEqual(
-          `/ROOT_PKG_PATH/${translationsDir}/sheet1-title.${languages[1]}.json`
-        );
+        expect(writeCalls[3][0]).toEqual({
+          language: languages[1],
+          domain: "sheet1-title",
+          outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+        });
         expect(writeCalls[3][1]).toEqual(mockSheetLines);
-        expect(writeCalls[4][0]).toEqual(
-          `/ROOT_PKG_PATH/${translationsDir}/sheet2-title.${languages[1]}.json`
-        );
+        expect(writeCalls[4][0]).toEqual({
+          language: languages[1],
+          domain: "sheet2-title",
+          outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+        });
         expect(writeCalls[4][1]).toEqual(mockSheetLines2);
-        expect(writeCalls[5][0]).toEqual(
-          `/ROOT_PKG_PATH/${translationsDir}/sheet3-title.${languages[1]}.json`
-        );
+        expect(writeCalls[5][0]).toEqual({
+          language: languages[1],
+          domain: "sheet3-title",
+          outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+        });
         expect(writeCalls[5][1]).toEqual(mockSheetLines3);
 
         expect(mockOraInstance.succeed).toHaveBeenNthCalledWith(
@@ -598,14 +632,18 @@ describe("update command", () => {
 
           const writeCalls = mockWrite.mock.calls;
 
-          expect(writeCalls[0][0]).toEqual(
-            `/ROOT_PKG_PATH/${translationsDir}/sheet-1.${languages[0]}.json`
-          );
+          expect(writeCalls[0][0]).toEqual({
+            language: languages[0],
+            domain: "sheet-1",
+            outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+          });
           expect(writeCalls[0][1]).toEqual(mockSheetLines);
 
-          expect(writeCalls[1][0]).toEqual(
-            `/ROOT_PKG_PATH/${translationsDir}/sheet-1.${languages[1]}.json`
-          );
+          expect(writeCalls[1][0]).toEqual({
+            language: languages[1],
+            domain: "sheet-1",
+            outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+          });
           expect(writeCalls[1][1]).toEqual(mockSheetLines);
 
           expect(console.error).toHaveBeenCalledTimes(2);
@@ -632,17 +670,29 @@ describe("update command", () => {
           expect(mockOraInstance.succeed).toHaveBeenCalledTimes(2);
 
           expect(mockWrite).toHaveBeenCalledWith(
-            `/ROOT_PKG_PATH/${translationsDir}/sheet1.${languages[0]}.json`,
+            {
+              outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+              language: languages[0],
+              domain: "sheet1",
+            },
             mockSheetLines,
             expect.anything()
           );
           expect(mockWrite).toHaveBeenCalledWith(
-            `/ROOT_PKG_PATH/${translationsDir}/${languages[0]}.json`,
+            {
+              outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+              language: languages[0],
+              domain: undefined,
+            },
             mockSheetLines2,
             expect.anything()
           );
           expect(mockWrite).toHaveBeenCalledWith(
-            `/ROOT_PKG_PATH/${translationsDir}/sheet3.${languages[0]}.json`,
+            {
+              outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+              language: languages[0],
+              domain: "sheet3",
+            },
             mockSheetLines3,
             expect.anything()
           );
@@ -654,17 +704,29 @@ describe("update command", () => {
           );
 
           expect(mockWrite).toHaveBeenCalledWith(
-            `/ROOT_PKG_PATH/${translationsDir}/sheet1.${languages[1]}.json`,
+            {
+              outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+              language: languages[1],
+              domain: "sheet1",
+            },
             mockSheetLines,
             expect.anything()
           );
           expect(mockWrite).toHaveBeenCalledWith(
-            `/ROOT_PKG_PATH/${translationsDir}/${languages[1]}.json`,
+            {
+              outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+              language: languages[1],
+              domain: undefined,
+            },
             mockSheetLines2,
             expect.anything()
           );
           expect(mockWrite).toHaveBeenCalledWith(
-            `/ROOT_PKG_PATH/${translationsDir}/sheet3.${languages[1]}.json`,
+            {
+              outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+              language: languages[1],
+              domain: "sheet3",
+            },
             mockSheetLines3,
             expect.anything()
           );
@@ -711,17 +773,29 @@ describe("update command", () => {
         expect(mockOraInstance.warn).toHaveBeenCalledTimes(2);
 
         expect(mockWrite).toHaveBeenCalledWith(
-          `/ROOT_PKG_PATH/${translationsDir}/sheet1-title.${languages[0]}.json`,
+          {
+            outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+            language: languages[0],
+            domain: "sheet1-title",
+          },
           mockSheetLines,
           expect.anything()
         );
         expect(mockWrite).toHaveBeenCalledWith(
-          `/ROOT_PKG_PATH/${translationsDir}/sheet2-title.${languages[0]}.json`,
+          {
+            outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+            language: languages[0],
+            domain: "sheet2-title",
+          },
           mockSheetLines2,
           expect.anything()
         );
         expect(mockWrite).toHaveBeenCalledWith(
-          `/ROOT_PKG_PATH/${translationsDir}/sheet3-title.${languages[0]}.json`,
+          {
+            outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+            language: languages[0],
+            domain: "sheet3-title",
+          },
           mockSheetLines3,
           expect.anything()
         );
@@ -732,17 +806,29 @@ describe("update command", () => {
         );
 
         expect(mockWrite).toHaveBeenCalledWith(
-          `/ROOT_PKG_PATH/${translationsDir}/sheet1-title.${languages[1]}.json`,
+          {
+            outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+            language: languages[1],
+            domain: "sheet1-title",
+          },
           mockSheetLines,
           expect.anything()
         );
         expect(mockWrite).toHaveBeenCalledWith(
-          `/ROOT_PKG_PATH/${translationsDir}/sheet2-title.${languages[1]}.json`,
+          {
+            outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+            language: languages[1],
+            domain: "sheet2-title",
+          },
           mockSheetLines2,
           expect.anything()
         );
         expect(mockWrite).toHaveBeenCalledWith(
-          `/ROOT_PKG_PATH/${translationsDir}/sheet3-title.${languages[1]}.json`,
+          {
+            outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+            language: languages[1],
+            domain: "sheet3-title",
+          },
           mockSheetLines3,
           expect.anything()
         );
@@ -773,12 +859,20 @@ describe("update command", () => {
           expect(mockOraInstance.succeed).toHaveBeenCalledTimes(2);
 
           expect(mockWrite).toHaveBeenCalledWith(
-            `/ROOT_PKG_PATH/${translationsDir}/sheet1.${languages[0]}.json`,
+            {
+              outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+              language: languages[0],
+              domain: "sheet1",
+            },
             mockSheetLines,
             expect.anything()
           );
           expect(mockWrite).toHaveBeenCalledWith(
-            `/ROOT_PKG_PATH/${translationsDir}/sheet2.${languages[0]}.json`,
+            {
+              outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+              language: languages[0],
+              domain: "sheet2",
+            },
             mockSheetLines2,
             expect.anything()
           );
@@ -790,12 +884,20 @@ describe("update command", () => {
           );
 
           expect(mockWrite).toHaveBeenCalledWith(
-            `/ROOT_PKG_PATH/${translationsDir}/sheet1.${languages[1]}.json`,
+            {
+              outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+              language: languages[1],
+              domain: "sheet1",
+            },
             mockSheetLines,
             expect.anything()
           );
           expect(mockWrite).toHaveBeenCalledWith(
-            `/ROOT_PKG_PATH/${translationsDir}/sheet2.${languages[1]}.json`,
+            {
+              outputDir: `/ROOT_PKG_PATH/${translationsDir}`,
+              language: languages[1],
+              domain: "sheet2",
+            },
             mockSheetLines2,
             expect.anything()
           );

@@ -185,10 +185,15 @@ class Update extends Base {
       language: string,
       domain?: string
     ): Promise<string> {
-      const fileName = outputTransformer.getFileName(language, domain);
-      const filePath = path.resolve(outputDir, fileName);
-
-      await writer.write(filePath, lines, outputTransformer);
+      const fileName = await writer.write(
+        {
+          language,
+          domain,
+          outputDir,
+        },
+        lines,
+        outputTransformer
+      );
 
       return path.join(relativeOutputPath, fileName);
     }
