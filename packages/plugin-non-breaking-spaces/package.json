@@ -9,7 +9,7 @@
     "bugs": "https://github.com/AckeeCZ/lokse/issues",
     "dependencies": {
         "@lokse/core": "^3.0.0",
-        "lodash": "4.17.20"
+        "lodash": "4.17.21"
     },
     "homepage": "https://github.com/AckeeCZ/lokse",
     "keywords": [
