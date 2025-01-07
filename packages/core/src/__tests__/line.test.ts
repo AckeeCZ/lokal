@@ -1,4 +1,5 @@
 import Line from '../line';
+import { describe, it, expect } from 'vitest';
 
 describe('Line.isComment', () => {
     it('is false when not comment', () => {

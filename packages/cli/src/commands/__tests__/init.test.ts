@@ -1,29 +1,31 @@
 import { test as oclifTest } from '@oclif/test';
-import { cosmiconfigSync } from 'cosmiconfig';
-import * as dedent from 'dedent';
-import { prompt } from 'inquirer';
-import logger from '../../logger';
+import dedent from 'dedent';
+import { describe, vi, expect } from 'vitest';
 
-jest.mock('cosmiconfig');
 const explorerMock = {
-    search: jest.fn(),
+    search: vi.fn(),
 };
-(cosmiconfigSync as jest.Mock).mockReturnValue(explorerMock);
+vi.mock('cosmiconfig', async () => ({
+    ...(await vi.importActual('cosmiconfig')),
+    cosmiconfigSync: vi.fn().mockReturnValue(explorerMock),
+}));
 
-const writeFileAsyncMock = jest.fn();
+const writeFileAsyncMock = vi.fn();
 
-jest.mock('bluebird', () => ({
-    promisifyAll: jest.fn(fsObject => ({
-        ...jest.requireActual('bluebird').promisifyAll(fsObject),
+vi.mock('bluebird', () => ({
+    promisifyAll: vi.fn(async fsObject => ({
+        ...((await vi.importActual('bluebird')) as any).promisifyAll(fsObject),
         writeFileAsync: writeFileAsyncMock,
     })),
 }));
 
-jest.mock('inquirer');
-const promptMock = prompt as unknown as jest.Mock;
+const promptMock = vi.fn();
+vi.mock('inquirer', () => ({
+    prompt: promptMock,
+}));
 
-jest.mock('../../logger');
-const logMock = logger.log as unknown as jest.Mock;
+const logMock = vi.fn();
+vi.mock('../../logger', () => ({ log: logMock }));
 
 describe('init command', () => {
     const test = oclifTest.register('setupMocks', () => ({
@@ -59,7 +61,7 @@ describe('init command', () => {
                 column: '',
             });
         })
-        .stub(process, 'cwd', jest.fn().mockReturnValue('/ROOT_PKG_PATH'))
+        .stub(process, 'cwd', vi.fn().mockReturnValue('/ROOT_PKG_PATH'))
         .command(['init'])
         .it('creates typescript config when selected typescript config type', () => {
             expect(writeFileAsyncMock).toHaveBeenCalledWith(
@@ -89,7 +91,7 @@ describe('init command', () => {
                 column: '',
             });
         })
-        .stub(process, 'cwd', jest.fn().mockReturnValue('/ROOT_PKG_PATH'))
+        .stub(process, 'cwd', vi.fn().mockReturnValue('/ROOT_PKG_PATH'))
         .command(['init'])
         .it('creates javascript config when selected javascript config type', () => {
             expect(writeFileAsyncMock).toHaveBeenCalledWith(
@@ -120,7 +122,7 @@ describe('init command', () => {
                 column: '',
             });
         })
-        .stub(process, 'cwd', jest.fn().mockReturnValue('/ROOT_PKG_PATH'))
+        .stub(process, 'cwd', vi.fn().mockReturnValue('/ROOT_PKG_PATH'))
         .command(['init'])
         .it('creates rc config when selected rc file config type', () => {
             expect(writeFileAsyncMock).toHaveBeenCalledWith(
@@ -146,7 +148,7 @@ describe('init command', () => {
                 column: 'web',
             });
         })
-        .stub(process, 'cwd', jest.fn().mockReturnValue('/ROOT_PKG_PATH'))
+        .stub(process, 'cwd', vi.fn().mockReturnValue('/ROOT_PKG_PATH'))
         .command(['init'])
         .it('use all inputed values to create config', () => {
             expect(promptMock).toHaveBeenCalledWith([

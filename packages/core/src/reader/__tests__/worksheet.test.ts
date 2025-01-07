@@ -13,7 +13,7 @@ export const createRow = (rowIndex: number, values: { [key: string]: any }) =>
     }) as unknown as GoogleSpreadsheetRow;
 
 describe('Worksheet', () => {
-    const logger = { warn: jest.fn(), log: jest.fn() };
+    const logger = { warn: vi.fn(), log: vi.fn() };
     const noPlugins = new PluginsRunner([], { logger });
 
     it('should extract lines', async () => {

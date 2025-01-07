@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { GoogleAuth } from 'google-auth-library';
 

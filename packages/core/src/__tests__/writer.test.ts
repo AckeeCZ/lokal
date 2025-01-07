@@ -1,20 +1,19 @@
 import { EOL } from 'os';
-import * as mkdirp from 'mkdirp';
+import mkdirp from 'mkdirp';
+
+import { type Mock, vi, describe } from 'vitest';
 
 const fs = {
-    accessAsync: jest.fn(),
-    readFileAsync: jest.fn().mockResolvedValue(''),
-    writeFileAsync: jest.fn(),
+    access: vi.fn(),
+    readFile: vi.fn().mockResolvedValue(''),
+    writeFile: vi.fn(),
 };
 
-jest.mock('fs');
-jest.mock('mkdirp');
-jest.doMock('bluebird', () => ({
-    ...jest.requireActual('bluebird'),
-    promisifyAll: jest.fn().mockReturnValue(fs),
+vi.mock('fs/promises', () => fs);
+vi.mock('mkdirp', () => ({
+    default: vi.fn(),
 }));
 
-import FileWriter from '../writer';
 import Line from '../line';
 import { transformersByFormat } from '../transformer';
 import { OutputFormat } from '../constants';
@@ -24,24 +23,25 @@ const androidTransformer = transformersByFormat[OutputFormat.ANDROID];
 const iosTransformer = transformersByFormat[OutputFormat.IOS];
 const jsonTransformer = transformersByFormat[OutputFormat.JSON];
 
-const logger = { warn: jest.fn(), log: jest.fn() };
+const logger = { warn: vi.fn(), log: vi.fn() };
 const plugin = {
     pluginName: 'test',
-    transformFullOutput: jest.fn(),
-    transformLine: jest.fn(),
-    readTranslation: jest.fn(),
+    transformFullOutput: vi.fn(),
+    transformLine: vi.fn(),
+    readTranslation: vi.fn(),
 };
 const plugins = new PluginsRunner([plugin], { logger });
 
-describe('Writer', () => {
+describe('Writer', async () => {
+    const FileWriter = await import('../writer').then(v => v.default);
     beforeEach(() => {
         plugin.transformFullOutput.mockReset().mockImplementation(output => output);
         plugin.transformLine.mockReset().mockImplementation(line => line);
 
-        ((fs as any).accessAsync as jest.Mock).mockClear();
-        ((fs as any).readFileAsync as jest.Mock).mockClear();
-        ((fs as any).writeFileAsync as jest.Mock).mockClear();
-        (mkdirp as unknown as jest.Mock).mockResolvedValue(null);
+        fs.access.mockClear();
+        fs.readFile.mockClear();
+        fs.writeFile.mockClear();
+        (mkdirp as unknown as Mock).mockResolvedValue(null);
     });
 
     describe('.write', () => {
@@ -53,8 +53,8 @@ describe('Writer', () => {
                 jsonTransformer,
             );
 
-            expect(fs.writeFileAsync).toHaveBeenCalledTimes(1);
-            expect(fs.writeFileAsync).toHaveBeenCalledWith(
+            expect(fs.writeFile).toHaveBeenCalledTimes(1);
+            expect(fs.writeFile).toHaveBeenCalledWith(
                 '/cz.json',
                 EOL + '{' + EOL + '  "key" : "value",' + EOL + '  "key2" : "value2"' + EOL + '}',
                 'utf8',
@@ -72,8 +72,8 @@ describe('Writer', () => {
                 jsonTransformer,
             );
 
-            expect(fs.writeFileAsync).toHaveBeenCalledTimes(1);
-            expect(fs.writeFileAsync).toHaveBeenCalledWith('/cz.json', '{"key":"value","key2":"value2"}', 'utf8');
+            expect(fs.writeFile).toHaveBeenCalledTimes(1);
+            expect(fs.writeFile).toHaveBeenCalledWith('/cz.json', '{"key":"value","key2":"value2"}', 'utf8');
         });
     });
 

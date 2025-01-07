@@ -1,27 +1,22 @@
+import { vi, describe, beforeEach, it, expect } from 'vitest';
+
 const generalOptions = {
     logger: {
-        warn: jest.fn(),
-        log: jest.fn(),
+        warn: vi.fn(),
+        log: vi.fn(),
     },
 };
 
-const plugin1Factory = jest.fn();
-const plugin2Factory = jest.fn();
-const plugin3Factory = jest.fn();
+// TODO check if virtual modules are supported like this
+const plugin1Factory = vi.fn();
+vi.mock('@lokse/plugin1', () => ({ default: plugin1Factory }));
+const plugin2Factory = vi.fn();
+vi.mock('@lokse/plugin2', () => ({ default: plugin2Factory }));
+const plugin3Factory = vi.fn();
+vi.mock('@lokse/plugin3', () => ({ default: plugin3Factory }));
 
-jest.doMock('@lokse/plugin1', () => plugin1Factory, {
-    virtual: true,
-});
-jest.doMock('@lokse/plugin2', () => plugin2Factory, {
-    virtual: true,
-});
-jest.doMock('@lokse/plugin3', () => plugin3Factory, {
-    virtual: true,
-});
-
-import { loadPlugins, PluginError } from '../load';
-
-describe('loadPlugins', () => {
+describe('loadPlugins', async () => {
+    const { loadPlugins, PluginError } = await import('../load');
     const generalMeta = { languages: [] };
     const plugin1Matcher = expect.objectContaining({ id: 'plugin1' });
     const plugin2Matcher = expect.objectContaining({ id: 'plugin2' });
@@ -35,22 +30,25 @@ describe('loadPlugins', () => {
         generalOptions.logger.log.mockClear();
     });
 
-    it('should log error and return empty list when plugins is not an array', () => {
-        expect(loadPlugins('' as any, generalOptions, generalMeta).plugins).toEqual([]);
+    it('should log error and return empty list when plugins is not an array', async () => {
+        expect((await loadPlugins('' as any, generalOptions, generalMeta)).plugins).toEqual([]);
         expect(generalOptions.logger.warn).toHaveBeenCalledWith(expect.stringMatching('Plugins list must be an array'));
     });
 
-    it('should load plugins by name', () => {
+    it('should load plugins by name', async () => {
         const plugins = ['@lokse/plugin1', '@lokse/plugin2'];
 
-        expect(loadPlugins(plugins, generalOptions, generalMeta).plugins).toEqual([plugin1Matcher, plugin2Matcher]);
+        expect((await loadPlugins(plugins, generalOptions, generalMeta)).plugins).toEqual([
+            plugin1Matcher,
+            plugin2Matcher,
+        ]);
         expect(plugin1Factory).toHaveBeenCalled();
         expect(plugin1Factory).toHaveBeenCalledWith(generalOptions, generalMeta);
         expect(plugin2Factory).toHaveBeenCalled();
         expect(plugin2Factory).toHaveBeenCalledWith(generalOptions, generalMeta);
     });
 
-    it('should load plugins by full definition', () => {
+    it('should load plugins by full definition', async () => {
         const plugin2Options = { test: 'test2' };
         const plugin3Options = { test: 'test3' };
         const plugins = [
@@ -58,7 +56,10 @@ describe('loadPlugins', () => {
             { name: '@lokse/plugin3', options: plugin3Options },
         ];
 
-        expect(loadPlugins(plugins, generalOptions, generalMeta).plugins).toEqual([plugin2Matcher, plugin3Matcher]);
+        expect((await loadPlugins(plugins, generalOptions, generalMeta)).plugins).toEqual([
+            plugin2Matcher,
+            plugin3Matcher,
+        ]);
         expect(plugin2Factory).toHaveBeenCalled();
         expect(plugin2Factory).toHaveBeenCalledWith(
             {
@@ -77,11 +78,14 @@ describe('loadPlugins', () => {
         );
     });
 
-    it('should load all plugins mixed names and definitions', () => {
+    it('should load all plugins mixed names and definitions', async () => {
         const pluginOptions = { test: 'test' };
         const plugins = [{ name: '@lokse/plugin1', options: pluginOptions }, '@lokse/plugin3'];
 
-        expect(loadPlugins(plugins, generalOptions, generalMeta).plugins).toEqual([plugin1Matcher, plugin3Matcher]);
+        expect((await loadPlugins(plugins, generalOptions, generalMeta)).plugins).toEqual([
+            plugin1Matcher,
+            plugin3Matcher,
+        ]);
         expect(plugin1Factory).toHaveBeenCalled();
         expect(plugin1Factory).toHaveBeenCalledWith(
             {
@@ -94,15 +98,18 @@ describe('loadPlugins', () => {
         expect(plugin3Factory).toHaveBeenCalledWith(generalOptions, generalMeta);
     });
 
-    it('should log plugins that were unable to find and load others', () => {
+    it('should log plugins that were unable to find and load others', async () => {
         const plugins = ['@lokse/plugin1', '@lokse/plugin1.5', '@lokse/plugin2', '@lokse/plugin4'];
 
-        expect(loadPlugins(plugins, generalOptions, generalMeta).plugins).toEqual([plugin1Matcher, plugin2Matcher]);
+        expect((await loadPlugins(plugins, generalOptions, generalMeta)).plugins).toEqual([
+            plugin1Matcher,
+            plugin2Matcher,
+        ]);
         expect(generalOptions.logger.warn).toHaveBeenCalledTimes(2);
         expect(generalOptions.logger.warn).toHaveBeenCalledWith(expect.stringMatching(/Unable to load/));
     });
 
-    it('should log known plugin errors that occurr during initialization', () => {
+    it('should log known plugin errors that occurr during initialization', async () => {
         plugin1Factory.mockImplementation(() => {
             throw new PluginError('Plugin 1 requires options');
         });
@@ -111,7 +118,7 @@ describe('loadPlugins', () => {
         });
         const plugins = ['@lokse/plugin1', '@lokse/plugin2', '@lokse/plugin3'];
 
-        expect(loadPlugins(plugins, generalOptions, generalMeta).plugins).toEqual([plugin3Matcher]);
+        expect((await loadPlugins(plugins, generalOptions, generalMeta)).plugins).toEqual([plugin3Matcher]);
         expect(generalOptions.logger.warn).toHaveBeenCalledTimes(2);
         expect(generalOptions.logger.warn).toHaveBeenCalledWith(
             expect.stringMatching('cannot been loaded: Plugin 1 requires options'),
@@ -121,7 +128,7 @@ describe('loadPlugins', () => {
         );
     });
 
-    it('should log unknown errors that occurred during its initialization', () => {
+    it('should log unknown errors that occurred during its initialization', async () => {
         plugin1Factory.mockImplementation(() => {
             throw new Error('Plugin 1 requires options');
         });
@@ -130,7 +137,7 @@ describe('loadPlugins', () => {
         });
         const plugins = ['@lokse/plugin1', '@lokse/plugin2', '@lokse/plugin3'];
 
-        expect(loadPlugins(plugins, generalOptions, generalMeta).plugins).toEqual([plugin3Matcher]);
+        expect((await loadPlugins(plugins, generalOptions, generalMeta)).plugins).toEqual([plugin3Matcher]);
         expect(generalOptions.logger.warn).toHaveBeenCalledTimes(2);
         expect(generalOptions.logger.warn).toHaveBeenCalledWith(
             expect.stringMatching(
@@ -144,10 +151,10 @@ describe('loadPlugins', () => {
         );
     });
 
-    it('assign name to every loaded plugin', () => {
+    it('assign name to every loaded plugin', async () => {
         const plugins = ['@lokse/plugin1', { name: '@lokse/plugin2', options: {} }];
 
-        const { plugins: loadedPlugins } = loadPlugins(plugins, generalOptions, generalMeta);
+        const { plugins: loadedPlugins } = await loadPlugins(plugins, generalOptions, generalMeta);
 
         expect(loadedPlugins[0]).toHaveProperty('pluginName', '@lokse/plugin1');
         expect(loadedPlugins[1]).toHaveProperty('pluginName', '@lokse/plugin2');

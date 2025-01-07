@@ -1,14 +1,12 @@
 import { EOL } from 'os';
-import { promisifyAll } from 'bluebird';
 import * as path from 'path';
-import * as mkdirp from 'mkdirp';
+import mkdirp from 'mkdirp';
+import * as fs from 'fs/promises';
 
 import Transformer from './transformer';
 import Line from './line';
 import { PluginsRunner } from './plugins';
 import type { TransformLineMeta } from './plugins';
-
-const fs = promisifyAll(require('fs'));
 
 interface FileInfo {
     language: string;
@@ -19,15 +17,21 @@ class FileWriter {
     // eslint-disable-next-line no-useless-constructor
     constructor(private plugins: PluginsRunner) {}
 
-    async write(fileInfo: FileInfo, lines: Line[], transformer: Transformer, encoding = 'utf8'): Promise<string> {
+    async write(
+        fileInfo: FileInfo,
+        lines: Line[],
+        transformer: Transformer,
+        encoding: BufferEncoding = 'utf8',
+    ): Promise<string> {
         let fileContent = '';
         const { language, domain, outputDir } = fileInfo;
         const fileName = transformer.getFileName(language, domain);
         const filePath = path.resolve(outputDir, fileName);
 
         try {
-            await fs.accessAsync(filePath, fs.F_OK);
-            fileContent = await fs.readFileAsync(filePath, encoding);
+            await fs.access(filePath, fs.constants.F_OK);
+            console.debug(fs.access);
+            fileContent = await fs.readFile(filePath, encoding);
 
             fileContent = fileContent.toString();
         } catch {
@@ -48,7 +52,7 @@ class FileWriter {
 
         const dirname = path.dirname(filePath);
         await mkdirp(dirname);
-        await fs.writeFileAsync(filePath, output, encoding);
+        await fs.writeFile(filePath, output, encoding);
 
         return fileName;
     }

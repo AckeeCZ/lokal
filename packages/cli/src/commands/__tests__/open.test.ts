@@ -1,7 +1,8 @@
 import { test } from '@oclif/test';
 import * as open from 'open';
+import { vi, describe, expect } from 'vitest';
 
-jest.mock('open');
+vi.mock('open');
 
 describe('open command', () => {
     test.stdout()

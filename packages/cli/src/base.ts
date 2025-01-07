@@ -1,5 +1,5 @@
 import { Command } from '@oclif/command';
-import * as updateNotifier from 'update-notifier';
+import updateNotifier from 'update-notifier';
 
 import { getConfig } from '@lokse/core';
 import type { LokseConfig } from '@lokse/core';

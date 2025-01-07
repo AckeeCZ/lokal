@@ -1,9 +1,9 @@
 import * as path from 'path';
 import { flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
-import * as ora from 'ora';
-import * as slugify from '@sindresorhus/slugify';
-import * as dedent from 'dedent';
+import ora from 'ora';
+import slugify from '@sindresorhus/slugify';
+import dedent from 'dedent';
 import * as flat from 'array.prototype.flat';
 import {
     Reader,
@@ -155,7 +155,7 @@ class Update extends Base {
             throw normalizedError;
         }
 
-        const plugins = loadPlugins(this.conf?.plugins ?? [], { logger }, { languages });
+        const plugins = await loadPlugins(this.conf?.plugins ?? [], { logger }, { languages });
         const outputTransformer = transformersByFormat[format];
         const reader = new Reader(sheetId, worksheetReader, plugins, {
             logger,

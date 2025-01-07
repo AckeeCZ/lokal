@@ -20,3 +20,4 @@ packages/*/lib
 .yarn
 tsconfig.tsbuildinfo
 .turbo
+coverage

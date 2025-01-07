@@ -1,26 +1,26 @@
-import { cosmiconfigSync } from 'cosmiconfig';
-import { getConfig } from '../config';
+import { vi, describe, it, beforeEach, afterAll, expect } from 'vitest';
 
-jest.mock('cosmiconfig', () => {
-    const mockExplorer = {
-        search: jest.fn(),
-    };
+const mockExplorer = {
+    search: vi.fn(),
+};
 
+vi.mock('cosmiconfig', () => {
     return {
-        cosmiconfigSync: jest.fn().mockReturnValue(mockExplorer),
+        cosmiconfigSync: vi.fn().mockReturnValue(mockExplorer),
     };
 });
 
-jest.mock('cosmiconfig-ts-loader');
+vi.mock('cosmiconfig-ts-loader');
 
-describe('getConfig', () => {
+describe('getConfig', async () => {
     const OLD_ENV = process.env;
-    const searchMock = cosmiconfigSync('foo').search as jest.Mock;
+    const searchMock = mockExplorer.search;
+    const { getConfig } = await import('../config');
 
     beforeEach(() => {
         searchMock.mockReset();
         // https://stackoverflow.com/a/48042799/7051731
-        jest.resetModules();
+        vi.resetModules();
         process.env = { ...OLD_ENV }; // Make a copy
     });
 

@@ -3,7 +3,7 @@ import jsonTransformer from '../../transformer/json';
 import { PluginsRunner } from '../runner';
 
 describe('PluginsRunner.runHook', () => {
-    const logger = { warn: jest.fn(), log: jest.fn() };
+    const logger = { warn: vi.fn(), log: vi.fn() };
     const meta = { language: '', transformer: jsonTransformer };
 
     beforeEach(() => {
@@ -14,21 +14,21 @@ describe('PluginsRunner.runHook', () => {
     it('should run hook of each plugin', async () => {
         const plugin1 = {
             pluginName: 'plugin1',
-            transformLine: jest.fn(),
-            transformFullOutput: jest.fn(),
-            readTranslation: jest.fn(),
+            transformLine: vi.fn(),
+            transformFullOutput: vi.fn(),
+            readTranslation: vi.fn(),
         };
         const plugin2 = {
             pluginName: 'plugin2',
-            transformLine: jest.fn(),
-            transformFullOutput: jest.fn(),
-            readTranslation: jest.fn(),
+            transformLine: vi.fn(),
+            transformFullOutput: vi.fn(),
+            readTranslation: vi.fn(),
         };
         const plugin3 = {
             pluginName: 'plugin3',
-            transformLine: jest.fn(),
-            transformFullOutput: jest.fn(),
-            readTranslation: jest.fn(),
+            transformLine: vi.fn(),
+            transformFullOutput: vi.fn(),
+            readTranslation: vi.fn(),
         };
         const target = {} as Line;
 
@@ -48,21 +48,21 @@ describe('PluginsRunner.runHook', () => {
     it('should pass result of plugin to the next one', async () => {
         const plugin1 = {
             pluginName: 'plugin1',
-            transformLine: jest.fn(),
-            transformFullOutput: jest.fn((output: string) => output + '1'),
-            readTranslation: jest.fn(),
+            transformLine: vi.fn(),
+            transformFullOutput: vi.fn((output: string) => output + '1'),
+            readTranslation: vi.fn(),
         };
         const plugin2 = {
             pluginName: 'plugin2',
-            transformLine: jest.fn(),
-            transformFullOutput: jest.fn((output: string) => output + '2'),
-            readTranslation: jest.fn(),
+            transformLine: vi.fn(),
+            transformFullOutput: vi.fn((output: string) => output + '2'),
+            readTranslation: vi.fn(),
         };
         const plugin3 = {
             pluginName: 'plugin3',
-            transformLine: jest.fn(),
-            transformFullOutput: jest.fn((output: string) => output + '3'),
-            readTranslation: jest.fn(),
+            transformLine: vi.fn(),
+            transformFullOutput: vi.fn((output: string) => output + '3'),
+            readTranslation: vi.fn(),
         };
 
         const plugins = new PluginsRunner([plugin1, plugin2, plugin3], {
@@ -79,18 +79,18 @@ describe('PluginsRunner.runHook', () => {
     it('should return original result if error occur during hook execution', async () => {
         const plugin1 = {
             pluginName: 'plugin1',
-            transformLine: jest.fn(),
-            transformFullOutput: jest.fn((output: string) => {
+            transformLine: vi.fn(),
+            transformFullOutput: vi.fn((output: string) => {
                 throw new Error('Something happened');
                 return output + '1';
             }),
-            readTranslation: jest.fn(),
+            readTranslation: vi.fn(),
         };
         const plugin2 = {
             pluginName: 'plugin2',
-            transformLine: jest.fn(),
-            transformFullOutput: jest.fn((output: string) => output + '2'),
-            readTranslation: jest.fn(),
+            transformLine: vi.fn(),
+            transformFullOutput: vi.fn((output: string) => output + '2'),
+            readTranslation: vi.fn(),
         };
 
         const plugins = new PluginsRunner([plugin1, plugin2], {

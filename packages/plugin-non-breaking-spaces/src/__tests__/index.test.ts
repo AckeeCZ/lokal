@@ -1,11 +1,12 @@
 import { Line, transformersByFormat, OutputFormat } from '@lokse/core';
 
 import nonBreakingSpacesPlugin from '..';
+import { describe, beforeEach, it, expect, vi } from 'vitest';
 
 const Transformer = transformersByFormat[OutputFormat.JSON];
 
 describe('Non-breaking spaces plugin', () => {
-    const logger = { warn: jest.fn(), log: jest.fn() };
+    const logger = { warn: vi.fn(), log: vi.fn() };
 
     beforeEach(() => {
         logger.warn.mockReset();
