@@ -2,6 +2,7 @@
     "name": "@lokse/plugin-fallback",
     "description": "Plugin for fallbacking missing translations to the default language translation",
     "version": "3.0.2",
+    "type": "module",
     "author": {
         "name": "Lukáš Horák",
         "email": "horaklukas@centrum.cz"

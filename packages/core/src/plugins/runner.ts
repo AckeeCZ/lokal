@@ -1,7 +1,9 @@
-import { reduce } from 'bluebird';
-import { getErrorMessage } from '../errors';
+import blubird from 'bluebird';
+import { getErrorMessage } from '../errors.js';
 
-import type { LoksePlugin, NamedLoksePlugin, GeneralPluginOptions } from './create';
+import type { LoksePlugin, NamedLoksePlugin, GeneralPluginOptions } from './create.js';
+
+const { reduce } = blubird;
 
 export class PluginsRunner {
     // eslint-disable-next-line no-useless-constructor

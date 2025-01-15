@@ -1,6 +1,7 @@
 {
     "name": "@lokse/plugin-non-breaking-spaces",
     "description": "",
+    "type": "module",
     "version": "3.0.0",
     "author": {
         "name": "Filip Kubík",
@@ -10,6 +11,9 @@
     "dependencies": {
         "@lokse/core": "^3.0.0",
         "lodash": "4.17.20"
+    },
+    "devDependencies": {
+        "@types/lodash": "4.17.14"
     },
     "homepage": "https://github.com/AckeeCZ/lokse",
     "keywords": [

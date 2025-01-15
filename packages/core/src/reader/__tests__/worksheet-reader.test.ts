@@ -1,5 +1,7 @@
 import { GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
-import WorksheetReader, { InvalidFilterError } from '../worksheet-reader';
+import WorksheetReader, { InvalidFilterError } from '../worksheet-reader.js';
+
+import { describe, it, expect } from 'vitest';
 
 const createWorksheet = (title: string, index = 1) => ({
     title,

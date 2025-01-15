@@ -6,16 +6,14 @@ const mockExplorer = {
 
 vi.mock('cosmiconfig', () => {
     return {
-        cosmiconfigSync: vi.fn().mockReturnValue(mockExplorer),
+        cosmiconfig: vi.fn().mockReturnValue(mockExplorer),
     };
 });
-
-vi.mock('cosmiconfig-ts-loader');
 
 describe('getConfig', async () => {
     const OLD_ENV = process.env;
     const searchMock = mockExplorer.search;
-    const { getConfig } = await import('../config');
+    const { getConfig } = await import('../config.js');
 
     beforeEach(() => {
         searchMock.mockReset();
@@ -28,17 +26,17 @@ describe('getConfig', async () => {
         process.env = OLD_ENV; // Restore old environment
     });
 
-    it('should return config loaded from cwd', () => {
-        getConfig();
+    it('should return config loaded from cwd', async () => {
+        await getConfig();
 
         expect(searchMock).toHaveBeenCalledTimes(1);
         expect(searchMock).toHaveBeenCalledWith(undefined);
     });
 
-    it('should return config loaded from custom path provided via env variable', () => {
+    it('should return config loaded from custom path provided via env variable', async () => {
         process.env.LOKSE_CONFIG_PATH = '/path/from/variable';
 
-        getConfig();
+        await getConfig();
 
         expect(searchMock).toHaveBeenCalledTimes(1);
         expect(searchMock).toHaveBeenCalledWith('/path/from/variable');

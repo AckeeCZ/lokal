@@ -7,7 +7,6 @@ const generalOptions = {
     },
 };
 
-// TODO check if virtual modules are supported like this
 const plugin1Factory = vi.fn();
 vi.mock('@lokse/plugin1', () => ({ default: plugin1Factory }));
 const plugin2Factory = vi.fn();
@@ -16,7 +15,7 @@ const plugin3Factory = vi.fn();
 vi.mock('@lokse/plugin3', () => ({ default: plugin3Factory }));
 
 describe('loadPlugins', async () => {
-    const { loadPlugins, PluginError } = await import('../load');
+    const { loadPlugins, PluginError } = await import('../load.js');
     const generalMeta = { languages: [] };
     const plugin1Matcher = expect.objectContaining({ id: 'plugin1' });
     const plugin2Matcher = expect.objectContaining({ id: 'plugin2' });

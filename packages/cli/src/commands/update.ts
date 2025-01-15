@@ -1,10 +1,9 @@
 import * as path from 'path';
-import { flags } from '@oclif/command';
-import { CLIError } from '@oclif/errors';
+import { Flags, Errors } from '@oclif/core';
 import ora from 'ora';
 import slugify from '@sindresorhus/slugify';
 import dedent from 'dedent';
-import * as flat from 'array.prototype.flat';
+import flat from 'array.prototype.flat';
 import {
     Reader,
     OutputFormat,
@@ -19,19 +18,18 @@ import {
 } from '@lokse/core';
 import type { WorksheetLinesByTitle } from '@lokse/core';
 
-import logger from '../logger';
-import Base from '../base';
+import Base from '../base.js';
 
-import { id as idFlag } from '../flags';
-import { MissingFlagValue, IncorrectFlagValue } from '../flags/errors';
-import { isCLIError } from '../invariants';
+import { id as idFlag } from '../flags/index.js';
+import { MissingFlagValue, IncorrectFlagValue } from '../flags/errors.js';
+import { isCLIError } from '../invariants.js';
 
 flat.shim();
 
 const outputFormats = Object.values(OutputFormat);
 const defaultFormat = OutputFormat.JSON;
 
-class Update extends Base {
+export default class Update extends Base {
     static description = 'update translations from localization spreadsheet';
 
     static examples = [
@@ -40,23 +38,23 @@ class Update extends Base {
     ];
 
     static flags = {
-        help: flags.help({ char: 'h' }),
-        id: idFlag.flag(),
-        dir: flags.string({ char: 'd', name: 'dir', description: 'output folder' }),
-        languages: flags.string({
+        help: Flags.help({ char: 'h' }),
+        id: idFlag.flag,
+        dir: Flags.string({ char: 'd', name: 'dir', description: 'output folder' }),
+        languages: Flags.string({
             char: 'l',
             description: 'translation columns languages. Multiple values are comma separated. For example cs,en,fr',
         }),
-        col: flags.string({
+        col: Flags.string({
             char: 'c',
             description: 'column containing translations keys. For example key_web.',
         }),
-        format: flags.enum({
+        format: Flags.custom<OutputFormat>({
             char: 'f',
             options: outputFormats,
             description: `output format. Default is ${defaultFormat}.`,
-        }),
-        sheets: flags.string({
+        })(),
+        sheets: Flags.string({
             char: 's',
             description:
                 'sheets to get translations from. Name or list of names, comma separated. For example Translations1,Translations2',
@@ -121,7 +119,7 @@ class Update extends Base {
 
     // eslint-disable-next-line complexity
     async run(): Promise<void> {
-        const { flags } = this.parse(Update);
+        const { flags } = await this.parse(Update);
 
         const sheetId = flags.id ?? '';
         const dir = flags.dir ?? this.conf?.dir;
@@ -146,6 +144,7 @@ class Update extends Base {
         }
 
         let worksheetReader;
+        const logger = this.logger;
 
         try {
             worksheetReader = new WorksheetReader(sheets, { logger });
@@ -226,10 +225,9 @@ class Update extends Base {
                 spinner.fail(`Generating ${langName} translations failed.`);
 
                 if (error instanceof FatalError) {
-                    this.error(new CLIError(error));
+                    this.error(new Errors.CLIError(error));
                 } else if (isCLIError(error)) {
                     this.error(error, {
-                        // @ts-expect-error For some reason overload doesn't match correct exit type
                         exit: error.oclif?.exit,
                     });
                 } else if (error instanceof Error || typeof error === 'string') {
@@ -239,5 +237,3 @@ class Update extends Base {
         }
     }
 }
-
-export = Update;

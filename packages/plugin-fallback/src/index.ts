@@ -1,5 +1,11 @@
-import { createPlugin, PluginError, isEqualCaseInsensitive } from '@lokse/core';
-import type { GeneralPluginOptions, GeneralPluginMeta, LoksePlugin } from '@lokse/core';
+import {
+    createPlugin,
+    PluginError,
+    isEqualCaseInsensitive,
+    type GeneralPluginOptions,
+    type GeneralPluginMeta,
+    type LoksePlugin,
+} from '@lokse/core';
 
 export interface PluginOptions extends GeneralPluginOptions {
     defaultLanguage: string;

@@ -1,6 +1,6 @@
-import { getErrorMessage } from '../errors';
-import type { NamedLoksePlugin, PluginFactory, GeneralPluginOptions, GeneralPluginMeta } from './create';
-import { PluginsRunner } from './runner';
+import { getErrorMessage } from '../errors.js';
+import type { NamedLoksePlugin, PluginFactory, GeneralPluginOptions, GeneralPluginMeta } from './create.js';
+import { PluginsRunner } from './runner.js';
 
 export class PluginError extends Error {}
 

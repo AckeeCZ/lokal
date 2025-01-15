@@ -1,6 +1,6 @@
 import { mapKeys, mapValues } from 'lodash';
 
-import { CustomPatterns } from '.';
+import { CustomPatterns } from './index.js';
 
 export const lowerCaseKeys = (patterns: CustomPatterns): Record<string, string> =>
     mapKeys(patterns, (_, key) => key.toLowerCase());

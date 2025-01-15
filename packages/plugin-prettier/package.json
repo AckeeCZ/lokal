@@ -2,6 +2,7 @@
     "name": "@lokse/plugin-prettier",
     "description": "Lokse plugin used to format output translations file using prettier",
     "version": "3.0.0",
+    "type": "module",
     "author": {
         "name": "Lukas Horak",
         "email": "horaklukas@centrum.cz"

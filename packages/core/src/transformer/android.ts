@@ -1,6 +1,6 @@
 import { EOL } from 'os';
-import { OutputFormat } from '../constants';
-import { Transformer } from './transformer';
+import { OutputFormat } from '../constants.js';
+import { Transformer } from './transformer.js';
 
 function setCharAt(str: string, index: number, chr: number) {
     if (index > str.length - 1) return str;

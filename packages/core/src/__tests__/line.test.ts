@@ -1,4 +1,4 @@
-import Line from '../line';
+import Line from '../line.js';
 import { describe, it, expect } from 'vitest';
 
 describe('Line.isComment', () => {

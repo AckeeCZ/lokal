@@ -2,8 +2,7 @@ import type { GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from 'google-sp
 import { Line } from '@lokse/core';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 
-import fallbackPluginFactory from '..';
-import type { PluginOptions } from '..';
+import fallbackPluginFactory, { type PluginOptions } from '../index.js';
 
 export const createRow = (rowIndex: number, values: { [key: string]: any }) => {
     const defaultRow = {

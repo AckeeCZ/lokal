@@ -1,6 +1,7 @@
-import { identity } from 'lodash';
+import identity from 'lodash/identity.js';
 
-import { createPlugin } from '../create';
+import { createPlugin } from '../create.js';
+import { describe, it, expect } from 'vitest';
 
 describe('createPlugin', () => {
     it('should fulfill missing plugin hooks', () => {

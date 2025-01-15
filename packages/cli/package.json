@@ -2,6 +2,7 @@
     "name": "lokse",
     "description": "Tool to efficient usage of translations stored in google spreadsheet",
     "version": "3.0.0",
+    "type": "module",
     "author": {
         "name": "Lukas Horak",
         "email": "horaklukas@centrum.cz"
@@ -10,10 +11,7 @@
     "bugs": "https://github.com/AckeeCZ/lokse/issues",
     "dependencies": {
         "@lokse/core": "^3.0.0",
-        "@oclif/command": "^1",
-        "@oclif/config": "^1",
-        "@oclif/errors": "^1.3.4",
-        "@oclif/plugin-help": "^3",
+        "@oclif/core": "4.2.2",
         "@sindresorhus/slugify": "^1.1.0",
         "@types/array.prototype.flat": "^1.2.1",
         "@types/dedent": "^0.7.0",
@@ -31,8 +29,7 @@
         "update-notifier": "^5.1.0"
     },
     "devDependencies": {
-        "@oclif/dev-cli": "^1",
-        "@oclif/test": "^1",
+        "@oclif/test": "4.1.6",
         "@types/node": "20.14.11",
         "vitest-when": "0.5.0"
     },
@@ -57,7 +54,7 @@
     },
     "repository": "AckeeCZ/lokse",
     "scripts": {
-        "build": "tsc -b",
+        "build": "tsc -b && cp -r src/templates lib/templates",
         "clean": "rm -rf lib",
         "copy:templates": "cp -r src/templates lib/templates",
         "postpack": "rm -f oclif.manifest.json",

@@ -1,6 +1,8 @@
-import Line from '../../line';
-import jsonTransformer from '../../transformer/json';
-import { PluginsRunner } from '../runner';
+import Line from '../../line.js';
+import jsonTransformer from '../../transformer/json.js';
+import { PluginsRunner } from '../runner.js';
+
+import { describe, beforeEach, vi, it, expect } from 'vitest';
 
 describe('PluginsRunner.runHook', () => {
     const logger = { warn: vi.fn(), log: vi.fn() };

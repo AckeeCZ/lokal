@@ -1,7 +1,7 @@
 import { createPlugin } from '@lokse/core';
 import type { GeneralPluginOptions, LoksePlugin } from '@lokse/core';
 
-import { lowerCaseKeys, regexifyValues } from './utils';
+import { lowerCaseKeys, regexifyValues } from './utils.js';
 
 export interface Patterns {
     [key: string]: RegExp | string;

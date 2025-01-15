@@ -1,5 +1,5 @@
-import type { OutputFormat } from '../constants';
-import Line from '../line';
+import type { OutputFormat } from '../constants.js';
+import Line from '../line.js';
 
 export interface Transformer {
     outputFormat: OutputFormat;

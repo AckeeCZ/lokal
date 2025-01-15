@@ -1,4 +1,5 @@
-import transformer from '../json';
+import transformer from '../json.js';
+import { describe, it, expect } from 'vitest';
 
 describe('JSONTransformer.transformKeyValue', () => {
     it('should replace new lines with empty string', () => {

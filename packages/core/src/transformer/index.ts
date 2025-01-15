@@ -1,9 +1,9 @@
-import { OutputFormat } from '../constants';
+import { OutputFormat } from '../constants.js';
 
-import { Transformer } from './transformer';
-import iOSTransformer from './ios';
-import androidTransformer from './android';
-import jsonTransformer from './json';
+import { Transformer } from './transformer.js';
+import iOSTransformer from './ios.js';
+import androidTransformer from './android.js';
+import jsonTransformer from './json.js';
 
 export const transformersByFormat = {
     [OutputFormat.IOS]: iOSTransformer,

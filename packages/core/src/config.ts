@@ -1,12 +1,10 @@
-import { cosmiconfigSync } from 'cosmiconfig';
-import typeScriptLoader from 'cosmiconfig-ts-loader';
+import { cosmiconfig } from 'cosmiconfig';
 
-import { OutputFormat, NAME } from './constants';
-import type { PluginDefinition, PluginName } from './plugins';
-import type { SheetsFilter } from './reader';
+import { OutputFormat, NAME } from './constants.js';
+import type { PluginDefinition, PluginName } from './plugins/index.js';
+import type { SheetsFilter } from './reader/index.js';
 
-// TODO: use async API once custom oclif flags will be asynchronous
-const explorerSync = cosmiconfigSync(NAME, {
+const explorer = cosmiconfig(NAME, {
     searchPlaces: [
         'package.json',
         `.${NAME}rc`,
@@ -20,14 +18,6 @@ const explorerSync = cosmiconfigSync(NAME, {
         `${NAME}.config.js`,
         `${NAME}.config.cjs`,
     ],
-    loaders: {
-        '.ts': typeScriptLoader({
-            compilerOptions: {
-                target: 'ES5',
-                module: 'Commonjs',
-            },
-        }),
-    },
 });
 
 export type LokseConfig = {
@@ -35,15 +25,15 @@ export type LokseConfig = {
     dir?: string;
     languages?: string[];
     column?: string;
-    format?: typeof OutputFormat;
+    format?: OutputFormat;
     sheets?: SheetsFilter;
     splitTranslations?: boolean | string[];
     plugins?: (PluginName | PluginDefinition)[];
 };
 
-export function getConfig(
+export async function getConfig(
     searchFrom: string | undefined = process.env.LOKSE_CONFIG_PATH,
-): undefined | null | LokseConfig {
-    const result = explorerSync.search(searchFrom);
+): Promise<undefined | null | LokseConfig> {
+    const result = await explorer.search(searchFrom);
     return result?.config;
 }

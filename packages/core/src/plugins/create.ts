@@ -1,9 +1,9 @@
 import type { GoogleSpreadsheetRow } from 'google-spreadsheet';
-import { identity } from 'lodash';
+import identity from 'lodash/identity.js';
 
-import Line from '../line';
-import type { Logger } from '../logger';
-import type Transformer from '../transformer';
+import Line from '../line.js';
+import type { Logger } from '../logger.js';
+import type Transformer from '../transformer/index.js';
 
 export interface TransformLineMeta {
     language: string;

@@ -1,5 +1,6 @@
 import { EOL } from 'os';
-import transformer from '../android';
+import transformer from '../android.js';
+import { describe, it, expect } from 'vitest';
 
 describe('AndroidTransformer.transformComment', () => {
     it('transforms comment', () => {

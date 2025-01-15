@@ -1,10 +1,12 @@
-import { all } from 'bluebird';
-import { isPlainObject } from 'lodash';
+import bluebird from 'bluebird';
+import isPlainObject from 'lodash/isPlainObject.js';
 import type { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
-import { forceArray, isEqualCaseInsensitive } from '../utils';
-import Worksheet from './worksheet';
-import defaultLogger from '../logger';
-import type { Logger } from '../logger';
+import { forceArray, isEqualCaseInsensitive } from '../utils.js';
+import Worksheet from './worksheet.js';
+import defaultLogger from '../logger.js';
+import type { Logger } from '../logger.js';
+
+const { all } = bluebird;
 
 export class InvalidFilterError extends Error {
     public filterStringified: string;

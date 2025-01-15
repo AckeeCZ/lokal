@@ -4,10 +4,9 @@ export type {
     GeneralPluginMeta,
     TransformFullOutputMeta,
     TransformLineMeta,
-} from './create';
-export { createPlugin } from './create';
+} from './create.js';
+export { createPlugin } from './create.js';
 
-export { PluginsRunner } from './runner';
+export { PluginsRunner } from './runner.js';
 
-export type { PluginName, PluginDefinition } from './load';
-export { loadPlugins, PluginError } from './load';
+export { loadPlugins, PluginError, type PluginName, type PluginDefinition } from './load.js';

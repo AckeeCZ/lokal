@@ -1,7 +1,7 @@
 import { EOL } from 'os';
 import mkdirp from 'mkdirp';
 
-import { type Mock, vi, describe } from 'vitest';
+import { type Mock, vi, describe, it, beforeEach, expect } from 'vitest';
 
 const fs = {
     access: vi.fn(),
@@ -14,10 +14,10 @@ vi.mock('mkdirp', () => ({
     default: vi.fn(),
 }));
 
-import Line from '../line';
-import { transformersByFormat } from '../transformer';
-import { OutputFormat } from '../constants';
-import { PluginsRunner } from '../plugins';
+import Line from '../line.js';
+import { transformersByFormat } from '../transformer/index.js';
+import { OutputFormat } from '../constants.js';
+import { PluginsRunner } from '../plugins/index.js';
 
 const androidTransformer = transformersByFormat[OutputFormat.ANDROID];
 const iosTransformer = transformersByFormat[OutputFormat.IOS];
@@ -33,7 +33,7 @@ const plugin = {
 const plugins = new PluginsRunner([plugin], { logger });
 
 describe('Writer', async () => {
-    const FileWriter = await import('../writer').then(v => v.default);
+    const FileWriter = await import('../writer.js').then(v => v.default);
     beforeEach(() => {
         plugin.transformFullOutput.mockReset().mockImplementation(output => output);
         plugin.transformLine.mockReset().mockImplementation(line => line);

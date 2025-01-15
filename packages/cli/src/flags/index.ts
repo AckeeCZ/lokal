@@ -1,1 +1,1 @@
-export * as id from './id';
+export * as id from './id.js';

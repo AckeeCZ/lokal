@@ -1,10 +1,10 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet';
-import SpreadsheetReader from '../spreadsheet-reader';
-import WorksheetReader from '../worksheet-reader';
-import { LangColumnNotFound, KeyColumnNotFound } from '../../errors';
-import Line from '../../line';
-import Worksheet from '../worksheet';
-import { PluginsRunner } from '../../plugins';
+import SpreadsheetReader from '../spreadsheet-reader.js';
+import WorksheetReader from '../worksheet-reader.js';
+import { LangColumnNotFound, KeyColumnNotFound } from '../../errors.js';
+import Line from '../../line.js';
+import Worksheet from '../worksheet.js';
+import { PluginsRunner } from '../../plugins/index.js';
 import { vi, expect, describe, beforeEach, it, Mock } from 'vitest';
 
 const GoogleSpreadsheetMock = GoogleSpreadsheet as unknown as Mock;

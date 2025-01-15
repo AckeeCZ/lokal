@@ -6,15 +6,14 @@
         "name": "Lukas Horak",
         "email": "horaklukas@centrum.cz"
     },
-    "type": "commonjs",
+    "type": "module",
     "bugs": "https://github.com/AckeeCZ/lokse/issues",
     "dependencies": {
         "@types/bluebird": "^3.5.32",
         "@types/dedent": "^0.7.0",
         "@types/mkdirp": "^1.0.1",
         "bluebird": "^3.7.2",
-        "cosmiconfig": "^7.0.0",
-        "cosmiconfig-ts-loader": "^0.1.1",
+        "cosmiconfig": "9.0.0",
         "dedent": "^0.7.0",
         "google-auth-library": "9.15.0",
         "google-spreadsheet": "4.1.4",
@@ -22,6 +21,7 @@
         "mkdirp": "^1.0.4"
     },
     "devDependencies": {
+        "@types/lodash": "4.17.14",
         "@types/node": "20.14.11",
         "typescript": "5.6.3"
     },

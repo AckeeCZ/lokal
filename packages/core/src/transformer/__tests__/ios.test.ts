@@ -1,5 +1,6 @@
 import { EOL } from 'os';
-import transformer from '../ios';
+import transformer from '../ios.js';
+import { describe, it, expect } from 'vitest';
 
 describe('iOSTransformer.transformComment', () => {
     it('transforms comment', () => {

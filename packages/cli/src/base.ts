@@ -1,10 +1,9 @@
-import { Command } from '@oclif/command';
+import { Command } from '@oclif/core';
 import updateNotifier from 'update-notifier';
 
-import { getConfig } from '@lokse/core';
-import type { LokseConfig } from '@lokse/core';
+import { getConfig, type Logger, type LokseConfig } from '@lokse/core';
 
-const pkg = require('../package.json');
+import pkg from '../package.json' assert { type: 'json' };
 
 export default abstract class Base extends Command {
     protected conf: undefined | null | LokseConfig;
@@ -17,6 +16,13 @@ export default abstract class Base extends Command {
         });
         notifier.notify();
 
-        this.conf = getConfig();
+        this.conf = await getConfig();
+    }
+
+    protected get logger(): Logger {
+        return {
+            ...console,
+            warn: this.warn,
+        };
     }
 }

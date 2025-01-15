@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
-require("dotenv-flow").config();
-
-require("@oclif/command")
-  .run()
-  .then(require("@oclif/command/flush"))
-  .catch(require("@oclif/errors/handle"));
+(async () => {
+  const oclif = await import('@oclif/core')
+  const dir = import.meta.url;
+  await oclif.execute({ type: 'esm', dir })
+})()

@@ -3,10 +3,10 @@ import * as path from 'path';
 import mkdirp from 'mkdirp';
 import * as fs from 'fs/promises';
 
-import Transformer from './transformer';
-import Line from './line';
-import { PluginsRunner } from './plugins';
-import type { TransformLineMeta } from './plugins';
+import Transformer from './transformer/index.js';
+import Line from './line.js';
+import { PluginsRunner } from './plugins/index.js';
+import type { TransformLineMeta } from './plugins/index.js';
 
 interface FileInfo {
     language: string;

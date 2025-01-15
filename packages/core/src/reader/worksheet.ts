@@ -1,9 +1,9 @@
 import { GoogleSpreadsheetRow } from 'google-spreadsheet';
 
-import Line from '../line';
-import { isEqualCaseInsensitive } from '../utils';
-import { KeyColumnNotFound, LangColumnNotFound } from '../errors';
-import type { PluginsRunner } from '../plugins';
+import Line from '../line.js';
+import { isEqualCaseInsensitive } from '../utils.js';
+import { KeyColumnNotFound, LangColumnNotFound } from '../errors.js';
+import type { PluginsRunner } from '../plugins/index.js';
 
 export default class Worksheet {
     public title: string;
